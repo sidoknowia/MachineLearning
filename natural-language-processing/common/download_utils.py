@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import errno
 import os
 import shutil
 
@@ -51,13 +52,28 @@ def download_from_github(version, fn, target_dir, force=False):
 
 
 def sequential_downloader(version, fns, target_dir, force=False):
-    os.makedirs(target_dir, exist_ok=True)
+
+
+    try:
+        os.makedirs(target_dir)
+    except OSError as e:
+        print e
+        if e.errno != errno.EEXIST:
+            raise
+
     for fn in fns:
         download_from_github(version, fn, target_dir, force=force)
 
 
 def link_all_files_from_dir(src_dir, dst_dir):
-    os.makedirs(dst_dir, exist_ok=True)
+
+    try:
+        os.makedirs(dst_dir)
+    except OSError as e:
+        print e
+        if e.errno != errno.EEXIST:
+            raise
+
     for fn in os.listdir(src_dir):
         src_file = os.path.join(src_dir, fn)
         dst_file = os.path.join(dst_dir, fn)
